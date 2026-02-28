@@ -1,0 +1,1150 @@
+<!DOCTYPE html>
+<html lang="he" dir="rtl">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+    <title>נקודות שאנן</title>
+    
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Cardo:ital,wght@0,400;0,700;1,400&family=Rubik:wght@300;400;700&display=swap" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chartjs-adapter-date-fns/dist/chartjs-adapter-date-fns.bundle.min.js"></script>
+
+    <style>
+        :root {
+            --bg:        #f5ead6;
+            --bg-dark:   #e8d5b0;
+            --card-bg:   #fdf3e0;
+            --card-edge: #c9a86c;
+            --primary:   #8b5e2a;
+            --accent:    #b8420a;
+            --danger:    #8b1a1a;
+            --gold:      #c8860a;
+            --silver:    #8a7d6e;
+            --text:      #1a1008;
+            --text-muted:#6b5535;
+            --ornament:  #a0723a;
+            --border:    #b89050;
+        }
+
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+
+        body {
+            font-family: 'Cardo', serif;
+            background-color: var(--bg);
+            background-image:
+                url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fill-rule='evenodd'%3E%3Cg fill='%23a0723a' fill-opacity='0.07'%3E%3Cpath d='M36 34v-4h-2v4h-4v2h4v4h2v-4h4v-2h-4zm0-30V0h-2v4h-4v2h4v4h2V6h4V4h-4zM6 34v-4H4v4H0v2h4v4h2v-4h4v-2H6zM6 4V0H4v4H0v2h4v4h2V6h4V4H6z'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E");
+            color: var(--text);
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            overflow-x: hidden;
+        }
+
+        /* ═══════════════════════════════
+           ORNAMENTAL DIVIDERS
+        ═══════════════════════════════ */
+        .ornament {
+            color: var(--ornament);
+            font-size: 1.3rem;
+            letter-spacing: 8px;
+            text-align: center;
+            opacity: 0.7;
+            user-select: none;
+        }
+        .ornament-line {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            width: 100%;
+            max-width: 500px;
+            margin: 8px 0;
+        }
+        .ornament-line::before,
+        .ornament-line::after {
+            content: '';
+            flex: 1;
+            height: 1px;
+            background: linear-gradient(to right, transparent, var(--border), transparent);
+        }
+        .ornament-line-text {
+            color: var(--ornament);
+            font-size: 1rem;
+            letter-spacing: 4px;
+            white-space: nowrap;
+        }
+
+        /* Double border lines */
+        .double-rule {
+            width: min(500px, 92%);
+            border: none;
+            height: 6px;
+            background: 
+                linear-gradient(var(--border), var(--border)) top/100% 1px no-repeat,
+                linear-gradient(var(--border), var(--border)) bottom/100% 1px no-repeat;
+            margin: 6px 0;
+            opacity: 0.5;
+        }
+
+        /* ═══════════════════════════════
+           HEADER
+        ═══════════════════════════════ */
+        header {
+            text-align: center;
+            padding: 30px 20px 10px;
+            width: 100%;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+
+        .header-top-rule {
+            width: min(500px, 92%);
+            border: none;
+            border-top: 2px solid var(--border);
+            margin-bottom: 16px;
+        }
+
+        h1 {
+            font-family: 'Cardo', serif;
+            font-size: 2.8rem;
+            font-weight: 700;
+            color: var(--primary);
+            letter-spacing: 2px;
+            line-height: 1.1;
+            text-shadow: 1px 1px 0 rgba(139,94,42,0.2);
+        }
+
+        #adminSubtitle {
+            display: none;
+            color: var(--accent);
+            font-size: 0.85rem;
+            letter-spacing: 3px;
+            font-style: italic;
+            margin-top: 4px;
+            text-transform: uppercase;
+        }
+
+        /* ═══════════════════════════════
+           DICTIONARY BOX
+        ═══════════════════════════════ */
+        .dict-box {
+            width: min(500px, 92%);
+            background: #f0e2c0;
+            border: 1px solid var(--card-edge);
+            border-right: 4px solid var(--primary);
+            padding: 14px 18px;
+            margin: 12px 0 8px;
+            position: relative;
+        }
+        .dict-box::before {
+            content: '❧';
+            position: absolute;
+            top: -12px;
+            right: 50%;
+            transform: translateX(50%);
+            background: #f0e2c0;
+            padding: 0 8px;
+            color: var(--ornament);
+            font-size: 1.2rem;
+        }
+        .dict-entry {
+            font-family: 'Cardo', serif;
+            font-size: 0.95rem;
+            line-height: 1.7;
+            color: var(--text);
+            direction: rtl;
+        }
+        .dict-entry .headword {
+            font-size: 1.15rem;
+            font-weight: 700;
+        }
+        .dict-entry .transliteration {
+            font-weight: 400;
+            font-style: italic;
+            color: var(--text-muted);
+        }
+        .dict-entry .definition {
+            font-weight: 400;
+        }
+        .dict-entry .origin {
+            font-size: 0.88rem;
+            color: var(--text-muted);
+            font-style: italic;
+        }
+
+        /* ═══════════════════════════════
+           NAV
+        ═══════════════════════════════ */
+        .nav-container {
+            display: flex;
+            gap: 0;
+            margin: 10px 0 20px;
+            width: min(500px, 92%);
+            border: 1px solid var(--border);
+            border-radius: 10px;
+            overflow: hidden;
+        }
+
+        .nav-btn {
+            flex: 1;
+            padding: 10px 8px;
+            background: var(--bg-dark);
+            border: none;
+            border-left: 1px solid var(--border);
+            color: var(--text-muted);
+            font-family: 'Cardo', serif;
+            font-size: 1rem;
+            cursor: pointer;
+            transition: background 0.2s, color 0.2s;
+            text-align: center;
+        }
+        .nav-btn:last-child { border-left: none; }
+        .nav-btn:hover { background: var(--card-bg); color: var(--primary); }
+        .nav-btn.active {
+            background: var(--card-bg);
+            color: var(--primary);
+            font-weight: 700;
+            box-shadow: inset 0 -2px 0 var(--primary);
+        }
+
+        /* ═══════════════════════════════
+           SECTIONS
+        ═══════════════════════════════ */
+        .section {
+            display: none;
+            width: min(500px, 92%);
+            flex-direction: column;
+            gap: 14px;
+            padding-bottom: 100px;
+            animation: fadeIn 0.3s ease-in-out;
+        }
+        .section.active { display: flex; }
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(8px); } to { opacity: 1; transform: translateY(0); } }
+
+        /* ═══════════════════════════════
+           SCOREBOARD
+        ═══════════════════════════════ */
+        .friend {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            background: var(--card-bg);
+            padding: 16px 20px;
+            border: 1px solid var(--card-edge);
+            border-radius: 12px;
+            position: relative;
+            transition: transform 0.18s, box-shadow 0.18s;
+            box-shadow: 0 2px 8px rgba(139,94,42,0.06);
+        }
+        .friend:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 18px rgba(139,94,42,0.12);
+        }
+        .friend.gold-border {
+            border-color: var(--gold);
+            background: #fef9ed;
+            box-shadow: 0 3px 16px rgba(200,134,10,0.13);
+        }
+
+        .name-group { display: flex; align-items: center; gap: 10px; flex-wrap: wrap; }
+        .name { font-size: 1.2rem; font-weight: 700; color: var(--text); font-family: 'Cardo', serif; }
+
+        /* תגיות מקום ראשון — עדינות, ספרותיות */
+        .badges-group { display: flex; gap: 6px; align-items: center; }
+        .prize-badge {
+            font-size: 0.75rem;
+            padding: 3px 10px;
+            font-family: 'Cardo', serif;
+            font-style: italic;
+            font-weight: 400;
+            color: var(--primary);
+            border: 1px solid var(--gold);
+            border-radius: 20px;
+            background: transparent;
+            letter-spacing: 0.3px;
+            opacity: 0.85;
+        }
+        .cake-badge {
+            font-size: 0.95rem;
+            opacity: 0.8;
+        }
+
+        /* Admin Controls */
+        .admin-only { display: none !important; }
+        body.is-admin .admin-only { display: flex !important; }
+        body.is-admin .admin-block { display: block !important; }
+
+        .controls {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        .arrow {
+            cursor: pointer;
+            color: var(--primary);
+            font-size: 1rem;
+            user-select: none;
+            width: 28px;
+            height: 28px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: 50%;
+            border: 1px solid var(--border);
+            background: var(--bg-dark);
+            transition: all 0.15s;
+        }
+        .arrow:hover { background: var(--primary); color: #fff; border-color: var(--primary); }
+        .number {
+            font-size: 1.35rem;
+            font-weight: 700;
+            color: var(--accent);
+            min-width: 36px;
+            text-align: center;
+            font-family: 'Cardo', serif;
+        }
+        body.is-admin .number { cursor: pointer; opacity: 0.85; }
+        body.is-admin .number:hover { opacity: 1; }
+        body.is-admin .name { cursor: pointer; }
+        body.is-admin .name:hover { color: var(--primary); }
+        .delete-btn {
+            background: none;
+            border: none;
+            color: var(--text-muted);
+            font-size: 0.85rem;
+            cursor: pointer;
+            opacity: 0.4;
+            transition: opacity 0.15s, color 0.15s;
+            padding: 2px 4px;
+        }
+        .delete-btn:hover { color: var(--danger); opacity: 1; }
+
+        /* ═══════════════════════════════
+           ANALYTICS
+        ═══════════════════════════════ */
+        .chart-container {
+            background: var(--card-bg);
+            padding: 16px;
+            border: 1px solid var(--card-edge);
+            border-radius: 12px;
+            margin-bottom: 6px;
+        }
+        .chart-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 10px;
+            flex-wrap: wrap;
+            gap: 8px;
+        }
+        .chart-title {
+            font-weight: 700;
+            color: var(--primary);
+            font-family: 'Cardo', serif;
+            font-size: 1.05rem;
+        }
+
+        select, .time-selector {
+            background: var(--bg-dark);
+            color: var(--text);
+            border: 1px solid var(--border);
+            padding: 4px 8px;
+            font-family: 'Cardo', serif;
+            outline: none;
+        }
+
+        .select-wrapper { position: relative; display: inline-block; }
+        .multi-select-trigger {
+            cursor: pointer;
+            background: var(--bg-dark);
+            border: 1px solid var(--border);
+            padding: 4px 10px;
+            display: flex;
+            align-items: center;
+            gap: 5px;
+            font-size: 0.9rem;
+            font-family: 'Cardo', serif;
+            color: var(--text);
+        }
+        .multi-select-container {
+            display: none;
+            background: var(--card-bg);
+            border: 1px solid var(--border);
+            padding: 10px;
+            z-index: 1000;
+            position: absolute;
+            top: 100%;
+            right: 0;
+            width: 200px;
+            max-height: 300px;
+            overflow-y: auto;
+            box-shadow: 4px 4px 12px rgba(100,60,10,0.15);
+        }
+        @media (max-width: 768px) {
+            .multi-select-container {
+                position: fixed;
+                top: auto; bottom: 0; left: 0; right: 0;
+                width: 100%; max-width: 100%;
+                border-top: 2px solid var(--primary);
+                padding: 20px;
+                padding-bottom: 40px;
+                background: var(--card-bg);
+                animation: slideUp 0.3s ease-out;
+            }
+        }
+        @keyframes slideUp { from { transform: translateY(100%); } to { transform: translateY(0); } }
+        .multi-select-container label {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            padding: 10px 0;
+            border-bottom: 1px solid var(--bg-dark);
+            font-size: 1rem;
+            color: var(--text);
+            font-family: 'Cardo', serif;
+        }
+        .multi-select-container input[type="checkbox"] {
+            width: 16px; height: 16px;
+            accent-color: var(--primary);
+        }
+        .time-range-bar {
+            display: flex;
+            gap: 4px;
+            margin-bottom: 10px;
+            justify-content: center;
+            flex-wrap: wrap;
+        }
+        .range-btn {
+            background: transparent;
+            border: 1px solid var(--border);
+            color: var(--text-muted);
+            padding: 3px 8px;
+            font-size: 0.78rem;
+            cursor: pointer;
+            font-family: 'Cardo', serif;
+            transition: all 0.15s;
+        }
+        .range-btn.active { background: var(--primary); color: #fff; border-color: var(--primary); }
+
+        /* ═══════════════════════════════
+           UPDATES FEED
+        ═══════════════════════════════ */
+        .update-card {
+            background: var(--card-bg);
+            padding: 14px 16px;
+            border: 1px solid var(--card-edge);
+            border-right: 3px solid var(--primary);
+            border-radius: 10px;
+        }
+        .update-meta {
+            display: flex;
+            justify-content: space-between;
+            font-size: 0.82rem;
+            color: var(--text-muted);
+            margin-bottom: 6px;
+            padding-bottom: 5px;
+            border-bottom: 1px solid var(--bg-dark);
+            font-style: italic;
+        }
+        .update-title {
+            font-size: 1.1rem;
+            font-weight: 700;
+            color: var(--accent);
+            margin-bottom: 5px;
+        }
+        .update-content {
+            font-size: 0.95rem;
+            line-height: 1.6;
+            white-space: pre-wrap;
+            color: var(--text);
+        }
+        .no-updates {
+            text-align: center;
+            color: var(--text-muted);
+            margin-top: 20px;
+            font-style: italic;
+        }
+        .post-delete-btn {
+            background: transparent;
+            color: var(--danger);
+            border: 1px solid var(--danger);
+            padding: 3px 8px;
+            font-size: 0.78rem;
+            cursor: pointer;
+            margin-top: 8px;
+            font-family: 'Cardo', serif;
+            transition: all 0.15s;
+        }
+        .post-delete-btn:hover { background: var(--danger); color: #fff; }
+
+        /* ═══════════════════════════════
+           FORMS
+        ═══════════════════════════════ */
+        .input-group {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+            margin-top: 10px;
+            background: var(--card-bg);
+            padding: 14px;
+            border: 1px solid var(--card-edge);
+            border-radius: 12px;
+        }
+        .input-group h3 {
+            color: var(--primary);
+            font-family: 'Cardo', serif;
+            font-weight: 700;
+            font-size: 1.05rem;
+            margin-bottom: 2px;
+        }
+        input, textarea {
+            background: var(--bg);
+            border: 1px solid var(--border);
+            padding: 9px 12px;
+            color: var(--text);
+            font-family: 'Cardo', serif;
+            font-size: 0.95rem;
+            outline: none;
+            width: 100%;
+            border-radius: 8px;
+        }
+        input:focus, textarea:focus { border-color: var(--primary); }
+        .action-btn {
+            background: var(--primary);
+            color: #fff;
+            border: none;
+            padding: 10px;
+            font-family: 'Cardo', serif;
+            font-weight: 700;
+            font-size: 1rem;
+            cursor: pointer;
+            width: 100%;
+            margin-top: 4px;
+            transition: background 0.15s;
+            letter-spacing: 1px;
+            border-radius: 8px;
+        }
+        .action-btn:hover { background: var(--accent); }
+        .rich-text-controls { display: flex; gap: 5px; margin-bottom: 4px; }
+        .rt-btn {
+            background: var(--bg-dark);
+            color: var(--text);
+            border: 1px solid var(--border);
+            padding: 4px 10px;
+            cursor: pointer;
+            font-family: 'Cardo', serif;
+            font-weight: 700;
+            transition: background 0.15s;
+        }
+        .rt-btn:hover { background: var(--primary); color: #fff; }
+
+        /* ═══════════════════════════════
+           SECTION TITLES
+        ═══════════════════════════════ */
+        .section-title {
+            font-family: 'Cardo', serif;
+            font-size: 1.05rem;
+            font-weight: 400;
+            color: var(--text-muted);
+            text-align: center;
+            letter-spacing: 1px;
+            font-style: italic;
+        }
+
+        /* Loader */
+        #loader { text-align: center; color: var(--text-muted); margin-top: 20px; font-style: italic; }
+
+        /* ═══════════════════════════════
+           FOOTER
+        ═══════════════════════════════ */
+        footer {
+            width: 100%;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            padding: 20px 10px 30px;
+            margin-top: 10px;
+            border-top: 1px solid var(--border);
+            gap: 8px;
+        }
+        .footer-line {
+            font-family: 'Cardo', serif;
+            font-size: 0.82rem;
+            color: var(--text-muted);
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            text-decoration: none;
+            transition: color 0.15s;
+        }
+        .footer-line:hover { color: var(--primary); }
+        .footer-line svg {
+            width: 16px; height: 16px;
+            fill: currentColor;
+            flex-shrink: 0;
+        }
+        .admin-login-btn {
+            font-family: 'Cardo', serif;
+            font-size: 0.78rem;
+            color: var(--text-muted);
+            background: none;
+            border: none;
+            cursor: pointer;
+            letter-spacing: 1px;
+            font-style: italic;
+            padding: 2px 6px;
+            transition: color 0.15s;
+            opacity: 0.6;
+        }
+        .admin-login-btn:hover { color: var(--primary); opacity: 1; }
+        .footer-liri-link {
+            font-family: 'Cardo', serif;
+            font-size: 0.8rem;
+            color: var(--text-muted);
+            text-decoration: none;
+            letter-spacing: 0.5px;
+            transition: color 0.15s;
+        }
+        .footer-liri-link:hover { color: var(--primary); }
+
+    </style>
+</head>
+<body>
+
+    <header>
+        <hr class="header-top-rule">
+        <h1>נקודות שאנן</h1>
+        <div id="adminSubtitle">✦ ADMIN MODE ✦</div>
+
+        <div class="ornament-line" style="margin-top:10px;">
+            <span class="ornament-line-text">✦ ✦ ✦</span>
+        </div>
+
+        <div class="dict-box">
+            <div class="dict-entry">
+                <span class="headword">שַׁאֲנָן</span>
+                <span class="transliteration"> [שאנַנָּה]</span>
+                <span class="definition"> שָלֵו, חֲסַר דאגות –</span>
+                <span class="definition"> בדרך כלל מתוך הִתְעלמוּת מסַכָּנָה;</span>
+                <br>
+                <span class="origin">מכאן: שאנַנּוּת &lt;שאנן&gt;</span>
+            </div>
+        </div>
+    </header>
+
+    <div class="nav-container">
+        <div class="nav-btn active" onclick="showSection('homeSection', this)">דף הבית</div>
+        <div class="nav-btn" onclick="showSection('scoreboardSection', this)">לוח תוצאות</div>
+        <div class="nav-btn" onclick="showSection('analyticsSection', this)">מדדים</div>
+    </div>
+
+    <!-- HOME -->
+    <div id="homeSection" class="section active">
+        <div class="section-title">עדכונים אחרונים</div>
+        <div class="ornament-line"><span class="ornament-line-text">— ✦ —</span></div>
+
+        <div class="input-group admin-block" style="display:none;">
+            <h3>פרסם עדכון חדש</h3>
+            <input id="postAuthor" list="authorsList" placeholder="שם המפרסם..." />
+            <datalist id="authorsList"></datalist>
+            <input id="postTitle" placeholder="כותרת הפוסט" />
+            <div class="rich-text-controls">
+                <button class="rt-btn" onclick="formatText('b')">B</button>
+                <button class="rt-btn" onclick="formatText('i')">I</button>
+                <button class="rt-btn" onclick="formatText('u')">U</button>
+                <button class="rt-btn" onclick="addLink()">Link</button>
+            </div>
+            <textarea id="postContent" rows="4" placeholder="תוכן העדכון (ניתן להשתמש ב-HTML)"></textarea>
+            <button class="action-btn" onclick="publishUpdate()">פרסם לכולם</button>
+        </div>
+
+        <div id="updatesFeed">
+            <div id="loader">טוען עדכונים...</div>
+        </div>
+    </div>
+
+    <!-- SCOREBOARD -->
+    <div id="scoreboardSection" class="section">
+        <div id="scoreboardContainer" style="display:flex; flex-direction:column; gap:12px;"></div>
+
+        <div class="input-group admin-block" style="display:none; margin-top:20px;">
+            <h3>הוסף משתתף חדש</h3>
+            <input id="newFriendName" type="text" placeholder="שם המשתתף/ת" autocomplete="off" />
+            <input id="newFriendPoints" type="number" placeholder="ניקוד התחלתי" />
+            <button class="action-btn" onclick="addNewFriend()">הוסף לרשימה</button>
+        </div>
+    </div>
+
+    <!-- ANALYTICS -->
+    <div id="analyticsSection" class="section">
+        <div class="chart-container">
+            <div class="chart-header">
+                <div class="chart-title">השוואת נקודות</div>
+                <div style="position:relative;">
+                    <div class="multi-select-trigger" onclick="toggleMultiSelect()">בחר שמות ▼</div>
+                    <div id="multiSelectOptions" class="multi-select-container"></div>
+                </div>
+            </div>
+            <div class="time-range-bar" id="rangeBar1">
+                <button class="range-btn" onclick="setRange(1, '1d')">יום 1</button>
+                <button class="range-btn" onclick="setRange(1, '5d')">5 ימים</button>
+                <button class="range-btn" onclick="setRange(1, '1mo')">חודש</button>
+                <button class="range-btn" onclick="setRange(1, '6mo')">6 חודשים</button>
+                <button class="range-btn active" onclick="setRange(1, 'max')">משחר ההיסטוריה</button>
+            </div>
+            <canvas id="comparisonChart"></canvas>
+        </div>
+
+        <div class="chart-container">
+            <div class="chart-header">
+                <div class="chart-title">נקודות לפי שם</div>
+                <select id="individualSelect" onchange="renderIndividualGraph()"></select>
+            </div>
+            <div class="time-range-bar" id="rangeBar2">
+                <button class="range-btn" onclick="setRange(2, '1d')">יום 1</button>
+                <button class="range-btn" onclick="setRange(2, '5d')">5 ימים</button>
+                <button class="range-btn" onclick="setRange(2, '1mo')">חודש</button>
+                <button class="range-btn" onclick="setRange(2, '6mo')">6 חודשים</button>
+                <button class="range-btn active" onclick="setRange(2, 'max')">משחר ההיסטוריה</button>
+            </div>
+            <canvas id="individualChart"></canvas>
+        </div>
+    </div>
+
+    <!-- FOOTER -->
+    <footer>
+        <div class="ornament-line" style="width:min(500px,92%);">
+            <span class="ornament-line-text">— ✦ —</span>
+        </div>
+        <a href="https://github.com/burkasonthehacker" target="_blank" class="footer-line">
+            <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                <path d="M12 .297c-6.63 0-12 5.373-12 12 0 5.303 3.438 9.8 8.205 11.385.6.113.82-.258.82-.577 0-.285-.01-1.04-.015-2.04-3.338.724-4.042-1.61-4.042-1.61C4.422 18.07 3.633 17.7 3.633 17.7c-1.087-.744.084-.729.084-.729 1.205.084 1.838 1.236 1.838 1.236 1.07 1.835 2.809 1.305 3.495.998.108-.776.417-1.305.76-1.605-2.665-.3-5.466-1.332-5.466-5.93 0-1.31.465-2.38 1.235-3.22-.135-.303-.54-1.523.105-3.176 0 0 1.005-.322 3.3 1.23.96-.267 1.98-.399 3-.405 1.02.006 2.04.138 3 .405 2.28-1.552 3.285-1.23 3.285-1.23.645 1.653.24 2.873.12 3.176.765.84 1.23 1.91 1.23 3.22 0 4.61-2.805 5.625-5.475 5.92.42.36.81 1.096.81 2.22 0 1.606-.015 2.896-.015 3.286 0 .315.21.69.825.57C20.565 22.092 24 17.592 24 12.297c0-6.627-5.373-12-12-12"/>
+            </svg>
+            Developed by Liri Avrahami Shahar
+        </a>
+        <button class="admin-login-btn" onclick="adminLogin()" id="adminLoginBtn">Admin Login</button>
+        <a href="https://burkasonthehacker.github.io/Liri_Points/v4.0/" target="_blank" class="footer-liri-link">Liri Points</a>
+    </footer>
+
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
+        import { getFirestore, collection, onSnapshot, doc, setDoc, updateDoc, deleteDoc, serverTimestamp, addDoc, query, orderBy, getDocs, writeBatch, where } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
+        import { getAuth, signInWithPopup, GoogleAuthProvider, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
+
+        // ═══════════════════════════════════════
+        // FIREBASE CONFIG — החלף בפרויקט החדש שלך
+        // ═══════════════════════════════════════
+        const firebaseConfig = {
+            apiKey: "PASTE_YOUR_API_KEY_HERE",
+            authDomain: "PASTE_YOUR_AUTH_DOMAIN_HERE",
+            projectId: "PASTE_YOUR_PROJECT_ID_HERE",
+            storageBucket: "PASTE_YOUR_STORAGE_BUCKET_HERE",
+            messagingSenderId: "PASTE_YOUR_MESSAGING_SENDER_ID_HERE",
+            appId: "PASTE_YOUR_APP_ID_HERE"
+        };
+
+        // ═══════════════════════════════════════
+        // הכנס את ה-UID שלך כאן לאחר ההתחברות הראשונה
+        // ═══════════════════════════════════════
+        const ADMIN_UID = "PASTE_YOUR_UID_HERE";
+
+        const app = initializeApp(firebaseConfig);
+        const db = getFirestore(app);
+        const auth = getAuth(app);
+        const provider = new GoogleAuthProvider();
+
+        let friendsData = [];
+        let historyData = [];
+        let chartInstances = {};
+        let selectedComparison = [];
+        let activeRanges = { 1: 'max', 2: 'max' };
+
+        // Admin login from footer button
+        window.adminLogin = async () => {
+            const user = auth.currentUser;
+            if (user) {
+                // Already logged in — offer logout
+                if (confirm("אתה כבר מחובר. להתנתק?")) {
+                    await signOut(auth);
+                }
+                return;
+            }
+            try {
+                await signInWithPopup(auth, provider);
+            } catch(e) {
+                if (e.code !== 'auth/popup-closed-by-user') {
+                    console.error(e);
+                }
+            }
+        };
+
+        // Auth state
+        onAuthStateChanged(auth, (user) => {
+            window.currentUser = user;
+            const isAdmin = user && user.uid === ADMIN_UID;
+            document.body.classList.toggle("is-admin", !!isAdmin);
+
+            const sub = document.getElementById("adminSubtitle");
+            sub.style.display = isAdmin ? "block" : "none";
+
+            const loginBtn = document.getElementById("adminLoginBtn");
+            loginBtn.textContent = user ? (isAdmin ? "Admin Logout" : "Logout (no access)") : "Admin Login";
+
+            if (!isAdmin && user) {
+                // Wrong account
+                alert("חשבון זה אינו מורשה כאדמין.");
+                signOut(auth);
+            }
+
+            if (friendsData.length > 0) renderAll();
+        });
+
+        // Real-time listeners
+        onSnapshot(collection(db, "friends"), (snapshot) => {
+            friendsData = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
+            renderScoreboard();
+            updateDropdowns();
+            if(document.getElementById("analyticsSection").classList.contains("active")) {
+                loadGraphData();
+            }
+        });
+
+        const qUpdates = query(collection(db, "updates"), orderBy("timestamp", "desc"));
+        onSnapshot(qUpdates, (snapshot) => {
+            const feed = document.getElementById("updatesFeed");
+            feed.innerHTML = "";
+            const authors = new Set();
+
+            if (snapshot.empty) {
+                feed.innerHTML = `<div class="no-updates">לא נמצאו עדכונים</div>`;
+                return;
+            }
+
+            snapshot.forEach(docSnap => {
+                const data = docSnap.data();
+                if(data.author) authors.add(data.author);
+                const dateStr = data.timestamp ? new Date(data.timestamp.toDate()).toLocaleDateString('he-IL') : "";
+                const el = document.createElement("div");
+                el.className = "update-card";
+                el.innerHTML = `
+                    <div class="update-meta">
+                        <span>מאת: ${data.author || "מערכת"}</span>
+                        <span>${dateStr}</span>
+                    </div>
+                    <div class="update-title">${data.title}</div>
+                    <div class="update-content">${data.content}</div>
+                    <button class="post-delete-btn admin-only" onclick="deleteUpdate('${docSnap.id}')">מחק פוסט</button>
+                `;
+                feed.appendChild(el);
+            });
+
+            const datalist = document.getElementById("authorsList");
+            datalist.innerHTML = "";
+            authors.forEach(a => {
+                const opt = document.createElement("option");
+                opt.value = a;
+                datalist.appendChild(opt);
+            });
+        });
+
+        // Navigation
+        window.showSection = (id, btn) => {
+            document.querySelectorAll('.section').forEach(el => el.classList.remove('active'));
+            document.querySelectorAll('.nav-btn').forEach(el => el.classList.remove('active'));
+            document.getElementById(id).classList.add('active');
+            btn.classList.add('active');
+            if (id === 'analyticsSection') loadGraphData();
+        };
+
+        // Scoreboard
+        function renderScoreboard() {
+            const container = document.getElementById("scoreboardContainer");
+            container.innerHTML = "";
+            const sorted = [...friendsData].sort((a, b) => {
+                if (b.points !== a.points) return b.points - a.points;
+                // שוויון: מי שהשיג את הניקוד קודם נשאר גבוה יותר
+                const aTime = a.lastUpdate ? a.lastUpdate.toMillis() : 0;
+                const bTime = b.lastUpdate ? b.lastUpdate.toMillis() : 0;
+                return aTime - bTime;
+            });
+
+            sorted.forEach((friend, index) => {
+                const el = document.createElement("div");
+                el.className = "friend";
+                let badgesHtml = "";
+
+                if (index === 0 && sorted.length > 0) {
+                    el.classList.add("gold-border");
+                    badgesHtml = `
+                        <div class="badges-group">
+                            <span class="prize-badge">11 ₪</span>
+                            <span class="cake-badge">🎂</span>
+                        </div>
+                    `;
+                }
+
+                el.innerHTML = `
+                    <div class="name-group">
+                        <button class="delete-btn admin-only" onclick="deleteFriend('${friend.id}')">✕</button>
+                        <div class="name" id="name-${index}">${friend.id}</div>
+                        ${badgesHtml}
+                    </div>
+                    <div class="controls">
+                        <div class="arrow admin-only" onclick="updatePoints('${friend.id}', -1)">▼</div>
+                        <div class="number" onclick="manualEdit('${friend.id}')">${friend.points}</div>
+                        <div class="arrow admin-only" onclick="updatePoints('${friend.id}', 1)">▲</div>
+                    </div>
+                `;
+                container.appendChild(el);
+                document.getElementById(`name-${index}`).onclick = () => renameFriend(friend.id, friend.points);
+            });
+        }
+
+        // Admin actions
+        window.updatePoints = async (name, delta) => {
+            const f = friendsData.find(x => x.id === name);
+            if(!f) return;
+            const newPts = f.points + delta;
+            await updateDoc(doc(db, "friends", name), { points: newPts, lastUpdate: serverTimestamp() });
+            recordHistory(name, newPts);
+        };
+
+        window.manualEdit = async (name) => {
+            if (!window.currentUser) return;
+            const f = friendsData.find(x => x.id === name);
+            const val = prompt(`שנה ניקוד ל-${name}:`, f.points);
+            if (val && !isNaN(val)) {
+                await updateDoc(doc(db, "friends", name), { points: Number(val), lastUpdate: serverTimestamp() });
+                recordHistory(name, Number(val));
+            }
+        };
+
+        window.addNewFriend = async () => {
+            const n = document.getElementById("newFriendName").value.trim();
+            const p = Number(document.getElementById("newFriendPoints").value) || 0;
+            if (!n) return;
+            if (friendsData.find(f => f.id === n)) return alert("השם קיים כבר");
+            await setDoc(doc(db, "friends", n), { points: p, lastUpdate: serverTimestamp() });
+            recordHistory(n, p);
+            document.getElementById("newFriendName").value = "";
+            document.getElementById("newFriendPoints").value = "";
+        };
+
+        window.deleteFriend = async (name) => {
+            if (confirm(`למחוק את ${name}?`)) await deleteDoc(doc(db, "friends", name));
+        };
+
+        window.renameFriend = async (oldName, currentPoints) => {
+            if (!window.currentUser) return;
+            const newName = prompt(`שנה שם מ-${oldName} ל:`, oldName);
+            if (!newName || newName === oldName || newName.trim() === "") return;
+            if (friendsData.find(f => f.id === newName)) return alert("השם החדש כבר תפוס!");
+            if (!confirm(`פעולה זו תעדכן את היסטוריית הגרפים. להמשיך?`)) return;
+            await setDoc(doc(db, "friends", newName), { points: currentPoints, lastUpdate: serverTimestamp() });
+            await deleteDoc(doc(db, "friends", oldName));
+            const historyRef = collection(db, "history");
+            const q = query(historyRef, where("name", "==", oldName));
+            const querySnapshot = await getDocs(q);
+            const batch = writeBatch(db);
+            querySnapshot.forEach((d) => { batch.update(d.ref, { name: newName }); });
+            try { await batch.commit(); alert("השם עודכן בהצלחה!"); }
+            catch (e) { alert("שגיאה בעדכון היסטוריה."); }
+        };
+
+        async function recordHistory(name, pts) {
+            const total = friendsData.reduce((s, f) => s + (f.id === name ? pts : f.points), 0);
+            await addDoc(collection(db, "history"), {
+                name, points: pts, totalPoints: total, timestamp: serverTimestamp()
+            });
+        }
+
+        // Updates system
+        window.publishUpdate = async () => {
+            const author = document.getElementById("postAuthor").value;
+            const title = document.getElementById("postTitle").value;
+            const content = document.getElementById("postContent").value;
+            if(!title || !content) return alert("חובה למלא כותרת ותוכן");
+            try {
+                await addDoc(collection(db, "updates"), {
+                    author, title, content, timestamp: serverTimestamp()
+                });
+                document.getElementById("postTitle").value = "";
+                document.getElementById("postContent").value = "";
+                alert("הפוסט פורסם!");
+            } catch (e) {
+                alert("שגיאה בפרסום: וודא שאתה מחובר כאדמין.");
+            }
+        };
+
+        window.deleteUpdate = async (id) => {
+            if(confirm("למחוק את הפוסט לצמיתות?")) {
+                await deleteDoc(doc(db, "updates", id));
+            }
+        };
+
+        window.formatText = (tag) => {
+            const area = document.getElementById("postContent");
+            const start = area.selectionStart, end = area.selectionEnd;
+            const text = area.value;
+            const selection = text.substring(start, end);
+            area.value = text.substring(0, start) + `<${tag}>` + selection + `</${tag}>` + text.substring(end);
+        };
+
+        window.addLink = () => {
+            const area = document.getElementById("postContent");
+            const url = prompt("הכנס כתובת URL:");
+            if(url) area.value += `<a href="${url}" target="_blank">קישור</a>`;
+        };
+
+        // Analytics
+        function updateDropdowns() {
+            const multiContainer = document.getElementById("multiSelectOptions");
+            if (!multiContainer.children.length) {
+                const currentSelection = Array.from(multiContainer.querySelectorAll('input:checked')).map(i => i.value);
+                multiContainer.innerHTML = "";
+                friendsData.forEach(f => {
+                    const div = document.createElement("div");
+                    div.innerHTML = `<label style="display:flex; align-items:center; gap:8px; cursor:pointer; padding:5px;">
+                        <input type="checkbox" value="${f.id}" onchange="updateComparisonSelection()" ${currentSelection.includes(f.id) ? 'checked' : ''}>
+                        ${f.id}</label>`;
+                    multiContainer.appendChild(div);
+                });
+            }
+            const indSelect = document.getElementById("individualSelect");
+            const currentVal = indSelect.value;
+            indSelect.innerHTML = `<option value="total">סכום כולל (כולם)</option>`;
+            friendsData.forEach(f => {
+                const opt = document.createElement("option");
+                opt.value = f.id; opt.textContent = f.id;
+                indSelect.appendChild(opt);
+            });
+            if(currentVal) indSelect.value = currentVal;
+        }
+
+        window.toggleMultiSelect = () => {
+            const el = document.getElementById("multiSelectOptions");
+            el.style.display = el.style.display === "block" ? "none" : "block";
+        };
+
+        window.updateComparisonSelection = () => {
+            selectedComparison = Array.from(document.querySelectorAll('#multiSelectOptions input:checked')).map(c => c.value);
+            renderComparisonGraph();
+        };
+
+        async function loadGraphData() {
+            const q = query(collection(db, "history"), orderBy("timestamp", "asc"));
+            const snapshot = await getDocs(q);
+            historyData = snapshot.docs.map(docSnap => {
+                const d = docSnap.data();
+                return {
+                    name: d.name, points: d.points, total: d.totalPoints,
+                    date: d.timestamp ? d.timestamp.toDate() : new Date(),
+                    t: d.timestamp ? d.timestamp.toMillis() : Date.now()
+                };
+            });
+            renderComparisonGraph();
+            renderIndividualGraph();
+        }
+
+        function filterByTime(data, rangeCode) {
+            if (rangeCode === 'max') return data;
+            const now = Date.now();
+            let duration = 0;
+            if (rangeCode === '1d') duration = 24*60*60*1000;
+            if (rangeCode === '5d') duration = 5*24*60*60*1000;
+            if (rangeCode === '1mo') duration = 30*24*60*60*1000;
+            if (rangeCode === '6mo') duration = 6*30*24*60*60*1000;
+            return data.filter(item => (now - item.t) <= duration);
+        }
+
+        function getChartConfig(datasets) {
+            return {
+                type: 'line',
+                data: { datasets },
+                options: {
+                    responsive: true,
+                    interaction: { mode: 'index', intersect: false },
+                    elements: { point: { radius: 0, hoverRadius: 5 }, line: { tension: 0.4 } },
+                    plugins: {
+                        legend: { labels: { color: '#3d2000', font: { family: 'Cardo' } } },
+                        tooltip: {
+                            backgroundColor: 'rgba(253,243,224,0.97)',
+                            titleColor: '#8b1a1a',
+                            bodyColor: '#1a1008',
+                            borderColor: '#b89050',
+                            borderWidth: 1,
+                            callbacks: {
+                                title: (c) => new Date(c[0].parsed.x).toLocaleString('he-IL') + " GMT+2",
+                                label: (c) => ` ${c.dataset.label}: ${c.parsed.y} נק"ש`
+                            }
+                        }
+                    },
+                    scales: {
+                        x: { type: 'time', time: { unit: 'day', displayFormats: { day: 'd/M' } }, grid: { color: '#ddc99a' }, ticks: { color: '#6b5535', font: { family: 'Cardo' } } },
+                        y: { grid: { color: '#ddc99a' }, ticks: { color: '#6b5535', font: { family: 'Cardo' } } }
+                    }
+                }
+            };
+        }
+
+        window.renderComparisonGraph = () => {
+            const ctx = document.getElementById('comparisonChart').getContext('2d');
+            if (chartInstances[1]) chartInstances[1].destroy();
+            const filteredHistory = filterByTime(historyData, activeRanges[1]);
+            const datasets = [];
+            const colors = ['#8b1a1a', '#8b5e2a', '#2a5e8b', '#2a8b5e', '#5e2a8b', '#6b4c1a'];
+            selectedComparison.forEach((name, idx) => {
+                const userPoints = filteredHistory.filter(h => h.name === name).map(h => ({ x: h.date, y: h.points }));
+                const current = friendsData.find(f => f.id === name);
+                if(current) userPoints.push({ x: new Date(), y: current.points });
+                datasets.push({ label: name, data: userPoints, borderColor: colors[idx % colors.length], borderWidth: 2, fill: false });
+            });
+            chartInstances[1] = new Chart(ctx, getChartConfig(datasets));
+        };
+
+        window.renderIndividualGraph = () => {
+            const ctx = document.getElementById('individualChart').getContext('2d');
+            if (chartInstances[2]) chartInstances[2].destroy();
+            const selection = document.getElementById("individualSelect").value;
+            const filteredHistory = filterByTime(historyData, activeRanges[2]);
+            let dataPoints = [], label = "";
+
+            if (selection === 'total') {
+                label = "סכום כולל";
+                dataPoints = filteredHistory.map(h => ({ x: h.date, y: h.total }));
+                const grandTotal = friendsData.reduce((s,f) => s + f.points, 0);
+                dataPoints.push({ x: new Date(), y: grandTotal });
+            } else {
+                label = selection;
+                dataPoints = filteredHistory.filter(h => h.name === selection).map(h => ({ x: h.date, y: h.points }));
+                const current = friendsData.find(f => f.id === selection);
+                if(current) dataPoints.push({ x: new Date(), y: current.points });
+            }
+
+            let color = '#8b5e2a';
+            if (dataPoints.length > 1) {
+                if (dataPoints[dataPoints.length-1].y > dataPoints[0].y) color = '#2a8b5e';
+                else if (dataPoints[dataPoints.length-1].y < dataPoints[0].y) color = '#8b1a1a';
+            }
+
+            chartInstances[2] = new Chart(ctx, getChartConfig([{
+                label, data: dataPoints, borderColor: color, backgroundColor: color,
+                borderWidth: 2, fill: { target: 'origin', above: color+'18', below: color+'18' }
+            }]));
+        };
+
+        window.setRange = (graphId, range) => {
+            activeRanges[graphId] = range;
+            const bar = document.getElementById(`rangeBar${graphId}`);
+            bar.querySelectorAll('.range-btn').forEach(b => b.classList.remove('active'));
+            event.target.classList.add('active');
+            if (graphId === 1) renderComparisonGraph(); else renderIndividualGraph();
+        };
+
+        function renderAll() { renderScoreboard(); updateDropdowns(); }
+    </script>
+</body>
+</html>
