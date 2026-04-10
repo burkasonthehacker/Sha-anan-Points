@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html lang="he" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>נקודות שאנן - מעבר למעון חדש</title>
+    <link href="https://fonts.googleapis.com/css2?family=Cardo:ital,wght@0,400;0,700;1,400&display=swap" rel="stylesheet">
+    <style>
+        body {
+            background-color: #f5ead6;
+            background-image: url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fill-rule='evenodd'%3E%3Cg fill='%23a0723a' fill-opacity='0.07'%3E%3Cpath d='M36 34v-4h-2v4h-4v2h4v4h2v-4h4v-2h-4zm0-30V0h-2v4h-4v2h4v4h2V6h4V4h-4zM6 34v-4H4v4H0v2h4v4h2v-4h4v-2H6zM6 4V0H4v4H0v2h4v4h2V6h4V4H6z'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E");
+            color: #1a1008;
+            font-family: 'Cardo', serif;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            height: 100vh;
+            margin: 0;
+            text-align: center;
+        }
+        h1 { font-size: 3rem; color: #8b5e2a; margin-bottom: 0; }
+        .ornament { color: #a0723a; font-size: 1.5rem; margin: 10px 0; }
+        p { color: #6b5535; font-size: 1.3rem; max-width: 500px; line-height: 1.6; }
+        .timer { font-size: 3.5rem; color: #b8420a; margin: 15px 0; }
+        .btn {
+            border: 1px solid #b89050;
+            padding: 12px 40px;
+            color: #8b5e2a;
+            text-decoration: none;
+            background: #fdf3e0;
+            font-weight: 700;
+            font-style: italic;
+            transition: all 0.2s;
+        }
+        .btn:hover { background: #8b5e2a; color: white; }
+    </style>
+</head>
+<body>
+    <h1>משכננו השאנן הועתק</h1>
+    <div class="ornament">❧ ❧ ❧</div>
+    <p>הודעה למבקרים: האתר עבר למשכן קבע מודרני ומאורגן יותר.</p>
+    <div class="timer" id="countdown">7</div>
+    <p>ההעברה תתבצע בתוך מספר רגעים...</p>
+    <a href="https://lpoints.vercel.app/shanan/" class="btn">עבור למשכן החדש</a>
+
+    <script>
+        let count = 7;
+        const target = "https://lpoints.vercel.app/shanan/";
+        const el = document.getElementById('countdown');
+        const timer = setInterval(() => {
+            count--;
+            el.innerText = count;
+            if (count <= 0) {
+                clearInterval(timer);
+                window.location.href = target;
+            }
+        }, 1000);
+    </script>
+</body>
+</html>
